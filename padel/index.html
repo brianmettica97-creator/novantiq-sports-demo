@@ -1,0 +1,1137 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>NOVANTIQ Pádel</title>
+<meta name="description" content="Reservas de canchas de pádel por WhatsApp con seña por Mercado Pago, recordatorios y panel para el club.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230B1F2A'/%3E%3Crect x='7' y='5' width='18' height='22' rx='1.5' fill='none' stroke='%23EAF2F0' stroke-width='1.8'/%3E%3Cpath d='M7 16h18M16 9.5v13' stroke='%23EAF2F0' stroke-width='1.4'/%3E%3Ccircle cx='21.5' cy='10' r='3' fill='%23C8F048'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,500..900&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: bandas horizontales que alternan azul cancha de noche y claro; columna de 1120px; las líneas de la cancha vistas desde arriba son el motivo gráfico */
+:root{
+  --court:#0B1F2A;
+  --court-2:#123447;
+  --court-3:#1A4259;
+  --ball:#C8F048;
+  --bg:#F5F7F6;
+  --surface:#FFFFFF;
+  --ink:#0E1A20;
+  --muted:#53646D;
+  --line:#DCE3E1;
+  --free:#2E9E5B;
+  --busy:#9AA5AD;
+  --block:#E0A33B;
+  --wa:#1F8A4C;
+  --alert:#C2452D;
+  --on-court:#EAF2F0;
+  --on-court-muted:#9DB4BC;
+  --chat-bg:#E9E2D6;
+  --chat-in:#FFFFFF;
+  --chat-out:#D9FDD3;
+  --chat-ink:#111B21;
+  --chat-top:#075E54;
+  --f-display:"Archivo","Arial Narrow",system-ui,sans-serif;
+  --f-body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --court:#08161E;--court-2:#0F2836;--court-3:#163647;--bg:#0E1A20;--surface:#14242C;--ink:#E7EFEC;--muted:#9AABB2;--line:#24363F;
+  --free:#46C27D;--busy:#5D6D75;--block:#E8B055;--wa:#3DBB72;--alert:#E46A52;
+  --chat-bg:#0B141A;--chat-in:#202C33;--chat-out:#005C4B;--chat-ink:#E9EDEF;--chat-top:#1F2C34;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --court:#08161E;--court-2:#0F2836;--court-3:#163647;--bg:#0E1A20;--surface:#14242C;--ink:#E7EFEC;--muted:#9AABB2;--line:#24363F;
+  --free:#46C27D;--busy:#5D6D75;--block:#E8B055;--wa:#3DBB72;--alert:#E46A52;
+  --chat-bg:#0B141A;--chat-in:#202C33;--chat-out:#005C4B;--chat-ink:#E9EDEF;--chat-top:#1F2C34;color-scheme:dark}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.6;overflow-x:hidden}
+.wrap{max-width:1120px;margin-inline:auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--f-display);line-height:1.05;text-wrap:balance;margin:0}
+h2{font-size:clamp(30px,4.4vw,50px);font-weight:800;font-stretch:78%;letter-spacing:-.01em}
+h3{font-size:20px;font-weight:700;font-stretch:90%}
+p{margin:0}
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+section{padding-block:clamp(60px,9vw,108px)}
+.lead{color:var(--muted);max-width:60ch;font-size:18px}
+.head{display:grid;gap:14px;margin-bottom:44px}
+.on-court{background:var(--court);color:var(--on-court)}
+.on-court .lead,.on-court .eyebrow{color:var(--on-court-muted)}
+.court-lines{position:relative;overflow:hidden}
+.court-lines::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.12;
+  background:
+    linear-gradient(var(--on-court),var(--on-court)) 50% 0/2px 100% no-repeat,
+    linear-gradient(var(--on-court),var(--on-court)) 0 30%/100% 2px no-repeat,
+    linear-gradient(var(--on-court),var(--on-court)) 0 70%/100% 2px no-repeat}
+.court-lines>.wrap{position:relative}
+
+/* botones */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;font:600 16px/1 var(--f-body);padding:15px 22px;border-radius:999px;text-decoration:none;border:2px solid transparent;cursor:pointer;transition:transform .15s,background-color .15s;color:inherit;background:none}
+.btn:hover{transform:translateY(-1px)}
+.btn:focus-visible,a:focus-visible,input:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid var(--ball);outline-offset:3px}
+.btn-ball{background:var(--ball);color:#0B1F2A}
+.btn-ghost{border-color:currentColor}
+.btn-wa{background:var(--wa);color:#fff}
+.btn-dark{background:var(--ink);color:var(--bg)}
+
+/* nav */
+.nav{background:var(--court);color:var(--on-court);position:sticky;top:env(safe-area-inset-top,0px);z-index:20;border-bottom:1px solid color-mix(in srgb,var(--on-court) 10%,transparent)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--court)}
+.nav .wrap{display:flex;justify-content:space-between;align-items:center;padding-block:14px;gap:16px}
+.logo{display:flex;align-items:center;gap:10px;font-family:var(--f-display);font-weight:900;font-stretch:115%;letter-spacing:.04em;font-size:18px;color:var(--on-court);text-decoration:none}
+.logo svg{flex:none}
+.logo span{color:var(--ball)}
+.nav-links{display:flex;align-items:center;gap:22px}
+.nav-links a{color:var(--on-court);font-weight:600;font-size:15px;text-decoration:none}
+.nav-links a:not(.btn):hover{color:var(--ball)}
+.nav-links .btn{padding:10px 16px;font-size:14px}
+
+/* hero */
+.hero{padding-block:clamp(40px,7vw,84px) clamp(56px,8vw,96px)}
+.hero .wrap{display:grid;grid-template-columns:1.15fr .85fr;gap:48px;align-items:center}
+.hero h1{font-size:clamp(44px,7.2vw,92px);font-weight:900;font-stretch:70%;letter-spacing:-.015em;text-transform:uppercase}
+.hero h1 em{font-style:normal;color:var(--ball)}
+.hero .lead{margin-top:22px}
+.badge{display:inline-flex;align-items:center;gap:8px;margin-bottom:20px;font-family:var(--f-mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--ball);border:1px solid color-mix(in srgb,var(--ball) 50%,transparent);padding:6px 10px;border-radius:4px}
+.badge::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--ball)}
+.personalize{margin-top:30px;background:color-mix(in srgb,var(--on-court) 7%,transparent);border:1px solid color-mix(in srgb,var(--on-court) 16%,transparent);border-radius:16px;padding:16px;display:grid;gap:10px;max-width:520px}
+.personalize label{font:600 14px var(--f-body);color:var(--on-court)}
+.personalize .row{display:flex;gap:8px}
+.personalize input{flex:1;min-width:0;font:inherit;font-size:17px;padding:13px 14px;border-radius:10px;border:1.5px solid transparent;background:var(--on-court);color:#0B1F2A}
+.personalize input::placeholder{color:#5f7380}
+.personalize .hint{font-size:13px;color:var(--on-court-muted)}
+.hero .ctas{display:flex;flex-wrap:wrap;gap:12px;margin-top:22px}
+
+/* teléfono */
+.phone{background:var(--chat-bg);border-radius:30px;border:9px solid #050C10;max-width:350px;width:100%;justify-self:center;box-shadow:0 30px 60px -20px rgba(0,0,0,.6);overflow:hidden;color:var(--chat-ink);display:flex;flex-direction:column}
+.phone-top{background:var(--chat-top);color:#fff;padding:12px 14px;display:flex;gap:10px;align-items:center;font-size:13px;line-height:1.3}
+.phone-top b{display:block;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px}
+.avatar{flex:none;width:36px;height:36px;border-radius:50%;background:var(--ball);display:grid;place-items:center;font:900 13px var(--f-display);color:#0B1F2A;letter-spacing:.02em}
+.chat{padding:12px 10px 16px;display:flex;flex-direction:column;gap:6px;font-size:14px;line-height:1.4}
+.msg{max-width:86%;padding:7px 10px;border-radius:9px;box-shadow:0 1px 0 rgba(0,0,0,.08);overflow-wrap:anywhere}
+.msg.in{background:var(--chat-in);align-self:flex-start;border-top-left-radius:2px}
+.msg.out{background:var(--chat-out);align-self:flex-end;border-top-right-radius:2px}
+.msg.ok{border-left:3px solid var(--free)}
+.msg.sys{align-self:center;background:color-mix(in srgb,var(--chat-in) 80%,transparent);font-size:11.5px;font-family:var(--f-mono);letter-spacing:.04em;padding:4px 10px;box-shadow:none;text-transform:uppercase}
+.msg .opts{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
+.msg .opts span,.msg .opts button{border:1px solid color-mix(in srgb,var(--wa) 45%,transparent);color:var(--wa);background:transparent;border-radius:7px;padding:4px 9px;font:600 13px var(--f-body)}
+.msg .opts button{cursor:pointer;transition:background-color .15s}
+.msg .opts button:hover:not(:disabled){background:color-mix(in srgb,var(--wa) 12%,transparent)}
+.msg .opts button:disabled{opacity:.45;cursor:default}
+.msg .opts button.picked{background:color-mix(in srgb,var(--wa) 18%,transparent);opacity:1}
+.mp{display:inline-flex;align-items:center;gap:6px;margin-top:8px;background:#009EE3;color:#fff;border:0;border-radius:7px;padding:8px 12px;font:700 13px var(--f-body);cursor:pointer}
+.mp:disabled{opacity:.6;cursor:default}
+.typing{display:inline-flex;gap:3px;padding:10px 12px}
+.typing i{width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.4;animation:blink 1s infinite}
+.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+@keyframes blink{50%{opacity:1}}
+.demo-note{font-family:var(--f-mono);font-size:11px;text-align:center;color:var(--on-court-muted);margin-top:12px;letter-spacing:.06em}
+@media (prefers-reduced-motion:no-preference){
+  .chat.play .msg{animation:pop .35s ease both}
+  .msg.new{animation:pop .3s ease both}
+  @keyframes pop{from{transform:translateY(6px);opacity:.3}to{transform:none;opacity:1}}
+}
+
+/* dolores */
+.pains{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+.pain{border-top:3px solid var(--ink);padding-top:18px;display:grid;gap:8px;align-content:start}
+.pain .tag{font-family:var(--f-mono);font-size:12px;color:var(--alert);letter-spacing:.06em}
+.pain p{color:var(--muted);font-size:16px}
+
+/* demo interactiva */
+.demo-grid{display:grid;grid-template-columns:350px 1fr;gap:40px;align-items:start}
+.demo-grid .phone{justify-self:start;max-width:350px}
+.demo-grid .chat{height:470px;overflow-y:auto;scroll-behavior:smooth}
+.demo-side{display:grid;gap:18px;min-width:0}
+.mock{background:var(--surface);color:var(--ink);border-radius:14px;overflow:hidden;box-shadow:0 30px 60px -30px rgba(0,0,0,.7);min-width:0}
+.mock-bar{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid var(--line)}
+.mock-title{display:flex;gap:10px;align-items:center;font:700 16px var(--f-display);font-stretch:90%}
+.mock-title .club-chip{font:600 12px var(--f-mono);color:var(--muted);letter-spacing:.04em}
+.days{display:flex;gap:4px;background:var(--bg);border-radius:999px;padding:4px}
+.days button{border:0;background:none;font:600 13px var(--f-body);color:var(--muted);padding:6px 12px;border-radius:999px;cursor:pointer}
+.days button[aria-selected="true"]{background:var(--court);color:var(--ball)}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--muted);padding:10px 18px 0}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.grid-scroll{overflow-x:auto}
+table.agenda{border-collapse:separate;border-spacing:6px;width:100%;min-width:500px;font-size:14px;font-variant-numeric:tabular-nums;padding:6px 10px}
+.agenda th{font:600 13px var(--f-body);color:var(--muted);text-align:left;padding:4px 6px}
+.agenda td.h{font-family:var(--f-mono);font-size:13px;color:var(--muted);white-space:nowrap;width:58px}
+.slot{border-radius:8px;padding:8px 10px;min-height:52px;line-height:1.3;transition:background-color .3s,border-color .3s}
+.slot small{display:block;font-size:12px;opacity:.85}
+.slot.free{border:1.5px dashed var(--free);color:var(--free);font-weight:600}
+.slot.busy{background:color-mix(in srgb,var(--busy) 22%,transparent);border-left:4px solid var(--busy)}
+.slot.busy.wa{border-left-color:var(--wa)}
+.slot.busy.fijo{border-left-color:var(--court-3)}
+.slot.block{background:repeating-linear-gradient(135deg,color-mix(in srgb,var(--block) 22%,transparent) 0 8px,transparent 8px 16px);border:1.5px solid var(--block)}
+.slot.released{border:1.5px solid var(--block);background:color-mix(in srgb,var(--block) 14%,transparent);font-weight:600}
+.slot.mine{outline:3px solid var(--ball);outline-offset:1px}
+@media (prefers-reduced-motion:no-preference){.slot.mine{animation:flash 1.2s ease 2}}
+@keyframes flash{50%{background:color-mix(in srgb,var(--ball) 45%,transparent)}}
+.pill{display:inline-block;font-size:11px;font-weight:600;padding:1px 7px;border-radius:999px;margin-top:4px}
+.pill.pend{background:color-mix(in srgb,var(--block) 25%,transparent)}
+.pill.paid{background:color-mix(in srgb,var(--free) 22%,transparent)}
+.mock-foot{padding:12px 18px;border-top:1px solid var(--line);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-size:13px;color:var(--muted)}
+.fab{background:var(--court);color:var(--ball);font-weight:700;padding:8px 14px;border-radius:999px;font-size:13px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:color-mix(in srgb,var(--on-court) 14%,transparent);border-radius:12px;overflow:hidden}
+.stat{background:var(--court-2);padding:14px 16px;display:grid;gap:2px}
+.stat b{font:800 26px var(--f-display);font-stretch:80%;color:var(--on-court);font-variant-numeric:tabular-nums}
+.stat span{font-size:13px;color:var(--on-court-muted)}
+.demo-steps{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:14px;color:var(--on-court-muted);list-style:none;padding:0;margin:0}
+.demo-steps li{display:flex;gap:8px;align-items:center}
+.demo-steps li b{display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--court-3);color:var(--ball);font:700 12px var(--f-mono)}
+
+/* calculadora */
+.calc{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:stretch}
+.calc-in{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:28px;display:grid;gap:26px;align-content:start}
+.field{display:grid;gap:10px}
+.field-top{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.field label{font-weight:600;font-size:15px}
+.field output{font:700 20px var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+input[type=range]{width:100%;accent-color:var(--court-3);height:28px}
+:root[data-theme="dark"] input[type=range]{accent-color:var(--ball)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) input[type=range]{accent-color:var(--ball)}}
+.field small{color:var(--muted);font-size:13px}
+.calc-out{background:var(--court);color:var(--on-court);border-radius:16px;padding:28px;display:grid;gap:22px;align-content:start}
+.loss{display:grid;gap:4px}
+.loss span{font-size:15px;color:var(--on-court-muted)}
+.loss b{font:900 clamp(40px,6vw,64px)/1 var(--f-display);font-stretch:72%;color:var(--ball);font-variant-numeric:tabular-nums}
+.bars{display:grid;gap:12px}
+.bar-row{display:grid;gap:6px}
+.bar-row .lbl{display:flex;justify-content:space-between;gap:10px;font-size:14px;color:var(--on-court-muted)}
+.bar-row .lbl b{color:var(--on-court);font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.track{height:14px;background:color-mix(in srgb,var(--on-court) 10%,transparent);border-radius:4px;overflow:hidden}
+.fill{height:100%;border-radius:4px;transition:width .4s ease}
+.fill.loss-f{background:var(--alert)}
+.fill.cost-f{background:var(--ball)}
+.calc-facts{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.calc-facts div{border-top:1px solid color-mix(in srgb,var(--on-court) 18%,transparent);padding-top:10px}
+.calc-facts b{display:block;font:800 24px var(--f-display);font-stretch:80%;font-variant-numeric:tabular-nums}
+.calc-facts span{font-size:13px;color:var(--on-court-muted)}
+.calc-note{font-size:13px;color:var(--on-court-muted)}
+
+/* funcionalidades */
+.features{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.feat{background:var(--surface);padding:26px;display:grid;gap:8px;align-content:start}
+.feat .tag{font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;color:var(--muted)}
+.feat p{color:var(--muted);font-size:16px}
+
+/* comparación */
+.cmp-scroll{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+table.cmp{width:100%;min-width:640px;border-collapse:collapse;font-size:15px}
+.cmp th,.cmp td{padding:16px 18px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+.cmp tr:last-child td{border-bottom:0}
+.cmp thead th{font:700 15px var(--f-display);font-stretch:90%}
+.cmp thead th.us{background:var(--court);color:var(--ball)}
+.cmp td.us{background:color-mix(in srgb,var(--ball) 12%,transparent);font-weight:600}
+.cmp td:first-child{color:var(--muted);width:30%}
+.yes::before{content:"✓ ";color:var(--free);font-weight:700}
+.no::before{content:"✕ ";color:var(--alert);font-weight:700}
+
+/* deportes */
+.sports-tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px}
+.sports-tabs button{font:600 15px var(--f-body);padding:10px 18px;border-radius:999px;border:1.5px solid color-mix(in srgb,var(--on-court) 30%,transparent);background:transparent;color:var(--on-court);cursor:pointer;display:inline-flex;gap:8px;align-items:center}
+.sports-tabs button[aria-selected="true"]{background:var(--ball);color:#0B1F2A;border-color:var(--ball)}
+.sports-tabs .soon{font:700 10px var(--f-mono);letter-spacing:.08em;text-transform:uppercase;opacity:.75}
+.sport-panel{display:grid;grid-template-columns:auto 1fr;gap:36px;align-items:center;background:var(--court-2);border-radius:16px;padding:28px}
+.sport-panel canvas{width:180px;height:240px;max-width:100%}
+.sport-panel h3{font-size:30px;font-stretch:78%;font-weight:800}
+.sport-panel ul{margin:16px 0 0;padding:0;list-style:none;display:grid;gap:10px}
+.sport-panel li{display:flex;gap:12px;color:var(--on-court-muted)}
+.sport-panel li::before{content:"";flex:none;width:8px;height:8px;margin-top:9px;background:var(--ball);border-radius:2px}
+.sport-meta{margin-top:16px;font-family:var(--f-mono);font-size:13px;color:var(--ball)}
+
+/* precios */
+.bill{display:inline-flex;gap:4px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:4px;margin-bottom:28px}
+.bill button{border:0;background:none;font:600 14px var(--f-body);color:var(--muted);padding:8px 16px;border-radius:999px;cursor:pointer}
+.bill button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.bill .save{font:700 11px var(--f-mono);color:var(--free);margin-left:4px}
+.bill button[aria-pressed="true"] .save{color:var(--ball)}
+.plans{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;align-items:stretch}
+.plan{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:28px;display:flex;flex-direction:column;gap:18px}
+.plan.rec{border:2px solid var(--ink);position:relative}
+.plan .rec-tag{position:absolute;top:-13px;left:24px;background:var(--ball);color:#0B1F2A;font:700 11px var(--f-mono);letter-spacing:.08em;text-transform:uppercase;padding:5px 10px;border-radius:4px}
+.plan .for{color:var(--muted);font-size:15px}
+.price{display:flex;align-items:baseline;gap:6px;flex-wrap:wrap}
+.price b{font:900 52px/1 var(--f-display);font-stretch:72%;font-variant-numeric:tabular-nums}
+.price span{color:var(--muted);font-size:15px}
+.price-sub{font-size:13px;color:var(--muted);min-height:20px}
+.plan ul{margin:0;padding:0;list-style:none;display:grid;gap:9px;font-size:15px;flex:1}
+.plan li{display:flex;gap:10px}
+.plan li::before{content:"✓";color:var(--free);font-weight:700;flex:none}
+.plan li.off{color:var(--muted)}
+.plan li.off::before{content:"–";color:var(--muted)}
+.plan .btn{width:100%}
+.price-notes{margin-top:24px;display:flex;flex-wrap:wrap;gap:10px 28px;font-size:14px;color:var(--muted)}
+.price-notes b{color:var(--ink)}
+
+/* fundadores + contacto */
+.founders-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:start}
+.founder-box{border:2px solid var(--ball);border-radius:18px;padding:30px;display:grid;gap:18px;background:color-mix(in srgb,var(--ball) 6%,transparent)}
+.seats{display:flex;gap:8px}
+.seats i{width:34px;height:44px;border-radius:6px;border:2px solid var(--ball);position:relative}
+.seats i::after{content:"";position:absolute;left:50%;top:50%;width:60%;height:2px;background:var(--ball);transform:translate(-50%,-50%);opacity:.6}
+.founder-list{margin:0;padding:0;list-style:none;display:grid;gap:12px}
+.founder-list li{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start}
+.founder-list li b{font:700 13px var(--f-mono);color:#0B1F2A;background:var(--ball);border-radius:4px;padding:2px 7px;margin-top:2px}
+.founder-list li span{color:var(--on-court-muted)}
+.founder-list li strong{color:var(--on-court)}
+form{display:grid;gap:14px}
+label.f{font-weight:600;font-size:14px;display:grid;gap:6px;color:var(--on-court)}
+.on-court input.t{font:inherit;font-size:16px;padding:13px 14px;border-radius:10px;border:1.5px solid color-mix(in srgb,var(--on-court) 20%,transparent);background:color-mix(in srgb,var(--on-court) 6%,transparent);color:var(--on-court);width:100%}
+.on-court input.t::placeholder{color:var(--on-court-muted)}
+.form-out{font-size:14px;color:var(--on-court-muted)}
+.form-out a{color:var(--ball)}
+.contact-line{font-family:var(--f-mono);font-size:14px;color:var(--on-court-muted);margin-top:16px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.contact-line span{color:var(--on-court);user-select:all}
+.copy{font:600 12px var(--f-body);border:1px solid color-mix(in srgb,var(--on-court) 30%,transparent);color:var(--on-court);background:none;border-radius:999px;padding:4px 10px;cursor:pointer}
+
+/* preguntas */
+.faq{display:grid;gap:10px;max-width:820px}
+.faq details{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:0 20px}
+.faq summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:16px;align-items:center;padding:18px 0;font:700 18px var(--f-display);font-stretch:90%}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";font:500 24px var(--f-mono);color:var(--muted);transition:transform .2s}
+.faq details[open] summary::after{transform:rotate(45deg)}
+.faq details p{color:var(--muted);padding-bottom:18px;max-width:65ch}
+
+/* falta uno */
+.fu-top{display:grid;grid-template-columns:1fr 340px;gap:40px;align-items:end;margin-bottom:36px}
+.fu-top .head{margin-bottom:0}
+.notif{background:var(--court);color:var(--on-court);border-radius:18px;padding:16px;display:grid;gap:10px;box-shadow:0 20px 40px -24px rgba(0,0,0,.6)}
+.notif-h{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--on-court-muted)}
+.notif-h .avatar{width:28px;height:28px;font-size:11px}
+.notif-h b{color:var(--on-court);font-size:14px;margin-right:auto}
+.notif-b{background:var(--chat-in);color:var(--chat-ink);border-radius:10px;border-top-left-radius:2px;padding:10px 12px;font-size:14px;line-height:1.45}
+.notif-b .opts{display:flex;gap:6px;margin-top:8px}
+.notif-b .opts span{border:1px solid color-mix(in srgb,var(--wa) 45%,transparent);color:var(--wa);border-radius:7px;padding:3px 9px;font-weight:600;font-size:13px}
+.notif small{font-size:12px;color:var(--on-court-muted)}
+.fu-bar{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:14px;margin-bottom:20px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{font:600 14px var(--f-body);padding:8px 14px;border-radius:999px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+.chips button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chips .n{font:700 11px var(--f-mono);opacity:.7}
+.board{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+.fu{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:14px;min-width:0;transition:border-color .3s}
+.fu.full{border-color:color-mix(in srgb,var(--free) 60%,transparent)}
+.fu.fresh{border:2px solid var(--ball)}
+@media (prefers-reduced-motion:no-preference){.fu.fresh{animation:pop .4s ease both}}
+.fu-row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.fu-type{white-space:nowrap;font:700 11px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.need{display:inline-flex;align-items:center;gap:7px;font:800 13px var(--f-display);font-stretch:85%;letter-spacing:.04em;text-transform:uppercase;background:var(--ball);color:#0B1F2A;padding:5px 10px;border-radius:999px;white-space:nowrap}
+.need::before{content:"";width:7px;height:7px;border-radius:50%;background:#0B1F2A}
+@media (prefers-reduced-motion:no-preference){.need::before{animation:blink 1.4s infinite}}
+.need.done{background:color-mix(in srgb,var(--free) 20%,transparent);color:var(--free)}
+.need.done::before{background:var(--free);animation:none}
+.fu h3{font-size:24px;font-stretch:80%;font-weight:800}
+.fu-meta{display:grid;gap:3px;font-size:14px;color:var(--muted)}
+.fu-meta b{color:var(--ink);font-weight:600}
+.dots{display:flex;flex-wrap:wrap;gap:5px}
+.dots i{width:16px;height:16px;border-radius:50%;background:var(--court-3)}
+.dots i.me{background:var(--ball);box-shadow:0 0 0 2px var(--court-3)}
+.dots i.empty{background:none;border:2px dashed var(--muted)}
+.dots.pairs i{width:26px;border-radius:9px}
+.fu-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:auto}
+.fu-price{font:700 15px var(--f-mono);font-variant-numeric:tabular-nums}
+.fu-price small{display:block;font:500 12px var(--f-body);color:var(--muted)}
+.fu-actions{display:flex;gap:8px}
+.btn-sm{padding:9px 14px;font-size:14px}
+.link-btn{background:none;border:0;color:var(--muted);font:600 13px var(--f-body);cursor:pointer;padding:4px 0;display:inline-flex;gap:6px;align-items:center;align-self:flex-start}
+.link-btn::after{content:"";width:7px;height:7px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg) translateY(-2px);transition:transform .2s}
+.link-btn[aria-expanded="true"]::after{transform:rotate(-135deg) translateY(-1px)}
+.players{border-top:1px solid var(--line);padding:12px 0 0;margin:0;list-style:none;display:grid;gap:7px;font-size:14px}
+.players li{display:flex;justify-content:space-between;gap:10px}
+.players li span{color:var(--muted);font-size:13px}
+.players li.you{font-weight:700}
+.players li.slot-open{color:var(--muted);font-style:italic}
+.fu-ok{font-size:13px;color:var(--free);font-weight:600}
+.publish{background:var(--surface);border:1.5px dashed var(--muted);border-radius:16px;padding:20px;display:grid;gap:12px;align-content:start}
+.publish h3{font-size:22px;font-stretch:80%}
+.publish p{font-size:14px;color:var(--muted)}
+.publish label{display:grid;gap:5px;font-weight:600;font-size:13px}
+.publish select{font:inherit;font-size:15px;padding:10px 12px;border-radius:10px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);width:100%}
+.publish .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:860px){.fu-top{grid-template-columns:1fr}.notif{max-width:420px}}
+
+footer{background:var(--court);color:var(--on-court-muted);font-size:14px}
+footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:16px;padding-block:32px}
+
+.reveal-ready .slot{opacity:1}
+@media (prefers-reduced-motion:no-preference){
+  .agenda.fill-in .slot{animation:slotIn .5s ease both}
+  @keyframes slotIn{from{opacity:.35;transform:scale(.97)}to{opacity:1;transform:none}}
+}
+
+@media (max-width:960px){
+  .demo-grid{grid-template-columns:1fr}
+  .demo-grid .phone{justify-self:center}
+  .pains{grid-template-columns:1fr 1fr}
+}
+@media (max-width:860px){
+  .hero .wrap,.founders-grid,.calc{grid-template-columns:1fr}
+  .features{grid-template-columns:1fr 1fr}
+  .plans{grid-template-columns:1fr;max-width:480px}
+  .plan.rec{order:-1}
+  .sport-panel{grid-template-columns:1fr}
+  .sport-panel canvas{justify-self:center}
+  .nav-links a:not(.btn){display:none}
+}
+@media (max-width:560px){
+  .features,.pains{grid-template-columns:1fr}
+  .stats{grid-template-columns:1fr 1fr 1fr}
+  .stat b{font-size:22px}
+  .personalize .row{flex-direction:column}
+  .calc-in,.calc-out,.founder-box,.plan{padding:22px}
+}
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="logo" href="#top" aria-label="NOVANTIQ Pádel, inicio">
+      <svg width="30" height="30" viewBox="0 0 32 32" aria-hidden="true"><rect x="6.5" y="4.5" width="19" height="23" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M6.5 16h19M16 9.5v13" stroke="currentColor" stroke-width="1.4"/><circle cx="22" cy="9.5" r="3.2" fill="#C8F048"/></svg>
+      NOVANTIQ <span>PÁDEL</span>
+    </a>
+    <nav class="nav-links" aria-label="Secciones">
+      <a href="#demo">Demo</a>
+      <a href="#falta-uno">Falta uno</a>
+      <a href="#calculadora">Calculadora</a>
+      <a href="#precios">Precios</a>
+      <a href="#preguntas">Preguntas</a>
+      <a class="btn btn-ball" href="#fundadores">Quiero ser fundador</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero on-court court-lines" id="top">
+  <div class="wrap">
+    <div>
+      <span class="badge">Programa Fundadores · 5 clubes</span>
+      <h1>Tu club reserva y cobra solo, <em>por WhatsApp</em></h1>
+      <p class="lead">Tus jugadores escriben al WhatsApp de <strong data-club>tu club</strong>, ven las canchas libres de verdad, pagan la seña y reservan a cualquier hora. Vos ves todo en un panel, desde el celular. Sin comisión por reserva.</p>
+      <form class="personalize" id="club-form" autocomplete="off">
+        <label for="club-input">Mirá cómo quedaría con el nombre de tu club</label>
+        <div class="row">
+          <input id="club-input" name="club" maxlength="40" placeholder="Ej: Los Pinos Pádel">
+          <button class="btn btn-ball" type="submit">Ver mi club</button>
+        </div>
+        <span class="hint">El chat, el panel y la demo cambian al instante.</span>
+      </form>
+      <div class="ctas">
+        <a class="btn btn-ghost" href="#demo">Probar la demo</a>
+        <a class="btn btn-ghost wa-link" href="#" target="_blank" rel="noopener">Consultar por WhatsApp</a>
+      </div>
+    </div>
+    <div>
+      <div class="phone" aria-label="Ejemplo de conversación con el bot del club">
+        <div class="phone-top"><div class="avatar" data-initials>CE</div><div><b><span data-club>Club Ejemplo</span> · Reservas</b>en línea</div></div>
+        <div class="chat" id="hero-chat">
+          <div class="msg out">Hola</div>
+          <div class="msg in">¡Hola! ¿Qué querés hacer?<div class="opts"><span>Reservar cancha</span><span>Precios</span></div></div>
+          <div class="msg out">Reservar · mañana</div>
+          <div class="msg in">A las 19:30 están libres <b>Cancha 1</b> y <b>Cancha 3</b>.</div>
+          <div class="msg out">Cancha 3</div>
+          <div class="msg in">Para confirmar, aboná la seña de <b>$14.400</b>.<br><span class="mp" style="cursor:default">Pagar con Mercado Pago</span></div>
+          <div class="msg in ok">✓ Reserva confirmada. Cancha 3, 19:30 a 21:00. Te aviso 3 horas antes.</div>
+        </div>
+      </div>
+      <p class="demo-note">EJEMPLO DE CONVERSACIÓN · PRECIOS DE MUESTRA</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="head">
+      <span class="eyebrow">Lo que pasa hoy en muchos clubes</span>
+      <h2>Las reservas se comen el día y la caja</h2>
+    </div>
+    <div class="pains">
+      <div class="pain"><span class="tag">23:40 · "¿TENÉS CANCHA?"</span><h3>Mensajes a toda hora</h3><p>Llegan de noche, en el almuerzo y en medio de un partido. Si tardás, reservan en otro lado.</p></div>
+      <div class="pain"><span class="tag">TURNO VACÍO</span><h3>Gente que no viene</h3><p>Reservan, no avisan y esa hora ya no se vende. Sin seña, no hay forma de cuidarla.</p></div>
+      <div class="pain"><span class="tag">MARTES 15 H</span><h3>Huecos que nadie ve</h3><p>Los horarios flojos quedan vacíos porque nadie se entera de que están libres.</p></div>
+      <div class="pain"><span class="tag">CUADERNO + CHAT</span><h3>Agenda repartida</h3><p>Turnos que se pisan y ninguna idea de cuánto facturó el club en la semana.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="on-court" id="demo">
+  <div class="wrap">
+    <div class="head">
+      <span class="eyebrow">Probalo vos</span>
+      <h2>Reservá un turno en <span data-club>Club Ejemplo</span> y miralo aparecer en el panel</h2>
+      <ol class="demo-steps">
+        <li><b>1</b>Tocá las opciones del chat</li>
+        <li><b>2</b>Pagá la seña de prueba</li>
+        <li><b>3</b>Mirá el turno en la grilla del dueño</li>
+      </ol>
+    </div>
+    <div class="demo-grid">
+      <div class="phone" aria-label="Demo interactiva del bot de reservas">
+        <div class="phone-top"><div class="avatar" data-initials>CE</div><div><b><span data-club>Club Ejemplo</span> · Reservas</b><span id="bot-status">en línea</span></div></div>
+        <div class="chat" id="bot" aria-live="polite"></div>
+      </div>
+      <div class="demo-side">
+        <div class="mock">
+          <div class="mock-bar">
+            <div class="mock-title">Agenda <span class="club-chip" data-club>Club Ejemplo</span></div>
+            <div class="days" role="tablist" aria-label="Día">
+              <button role="tab" id="day-0" aria-selected="true" data-day="0">Hoy</button>
+              <button role="tab" id="day-1" aria-selected="false" data-day="1">Mañana</button>
+            </div>
+          </div>
+          <div class="legend"><span><i style="background:var(--free)"></i>Libre</span><span><i style="background:var(--wa)"></i>Por WhatsApp</span><span><i style="background:var(--busy)"></i>Mostrador</span><span><i style="background:var(--block)"></i>Bloqueada</span></div>
+          <div class="grid-scroll">
+            <table class="agenda" id="agenda" aria-label="Grilla de turnos de demostración">
+              <thead><tr><th scope="col"><span class="sr" style="position:absolute;left:-9999px">Hora</span></th><th scope="col">Cancha 1</th><th scope="col">Cancha 2</th><th scope="col">Cancha 3</th></tr></thead>
+              <tbody id="agenda-body"></tbody>
+            </table>
+          </div>
+          <div class="mock-foot"><span>Vista de demostración con datos de ejemplo</span><span class="fab">+ Reserva manual</span></div>
+        </div>
+        <div class="stats" aria-live="polite">
+          <div class="stat"><b id="st-res">0</b><span>Reservas por WhatsApp hoy</span></div>
+          <div class="stat"><b id="st-sena">$0</b><span>Señas cobradas</span></div>
+          <div class="stat"><b id="st-occ">0%</b><span>Ocupación del día</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="calculadora">
+  <div class="wrap">
+    <div class="head">
+      <span class="eyebrow">Hacé la cuenta</span>
+      <h2>¿Cuánta plata se le escapa a tu club por mes?</h2>
+      <p class="lead">Mové los controles con los números reales de tu club.</p>
+    </div>
+    <div class="calc">
+      <div class="calc-in">
+        <div class="field">
+          <div class="field-top"><label for="c-precio">Precio del turno de 90 min</label><output id="o-precio" for="c-precio"></output></div>
+          <input type="range" id="c-precio" min="15000" max="90000" step="1000" value="48000">
+        </div>
+        <div class="field">
+          <div class="field-top"><label for="c-caidas">Turnos que se caen por semana</label><output id="o-caidas" for="c-caidas"></output></div>
+          <input type="range" id="c-caidas" min="0" max="20" step="1" value="3">
+          <small>Gente que no viene, avisa tarde o cancela sin que el horario se vuelva a ofrecer.</small>
+        </div>
+        <div class="field">
+          <div class="field-top"><label for="c-horas">Horas por día contestando reservas</label><output id="o-horas" for="c-horas"></output></div>
+          <input type="range" id="c-horas" min="0" max="6" step="0.5" value="2">
+        </div>
+      </div>
+      <div class="calc-out" aria-live="polite">
+        <div class="loss"><span>Lo que perdés por turnos caídos, por mes</span><b id="r-loss">$0</b></div>
+        <div class="bars">
+          <div class="bar-row"><div class="lbl"><span>Turnos caídos</span><b id="r-loss2">$0</b></div><div class="track"><div class="fill loss-f" id="b-loss"></div></div></div>
+          <div class="bar-row"><div class="lbl"><span>NOVANTIQ plan Club</span><b id="r-cost">$0</b></div><div class="track"><div class="fill cost-f" id="b-cost"></div></div></div>
+        </div>
+        <div class="calc-facts">
+          <div><b id="r-turnos">0</b><span>turnos recuperados pagan el mes</span></div>
+          <div><b id="r-hs">0 h</b><span>de tu tiempo libres por mes</span></div>
+        </div>
+        <p class="calc-note">Calculado con 4,3 semanas por mes. Plan Club: USD 64 por mes, unos $93.000 al cambio de octubre de 2026.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="background:var(--surface);border-block:1px solid var(--line)">
+  <div class="wrap">
+    <div class="head">
+      <span class="eyebrow">Qué incluye</span>
+      <h2>Todo lo que necesita el club, en un solo sistema</h2>
+    </div>
+    <div class="features">
+      <div class="feat" style="background:var(--bg)"><span class="tag">WHATSAPP</span><h3>Bot con tu número</h3><p>Atiende las 24 horas con el nombre del club. Si alguien quiere hablar con una persona, te llega a vos.</p></div>
+      <div class="feat" style="background:var(--bg)"><span class="tag">COBROS</span><h3>Seña con Mercado Pago</h3><p>El jugador paga una parte al reservar. La plata va directo a la cuenta del club.</p></div>
+      <div class="feat" style="background:var(--bg)"><span class="tag">AVISOS</span><h3>Recordatorio automático</h3><p>Le llega horas antes del turno, con un botón para cancelar a tiempo.</p></div>
+      <div class="feat" style="background:var(--bg)"><span class="tag">HUECOS</span><h3>Lista de espera</h3><p>Si alguien cancela, el horario se ofrece solo a los que estaban esperando.</p></div>
+      <div class="feat" style="background:var(--bg)"><span class="tag">REGLAS</span><h3>Lista negra</h3><p>Quien falta sin avisar no vuelve a reservar sin seña. Vos definís hasta cuándo se cancela.</p></div>
+      <div class="feat" style="background:var(--bg)"><span class="tag">AGENDA</span><h3>Turnos fijos</h3><p>Los grupos de todas las semanas quedan cargados y se renuevan solos.</p></div>
+      <div class="feat" style="background:var(--bg)"><span class="tag">PANEL</span><h3>Grilla en el celular</h3><p>Reservas manuales, bloqueos por mantenimiento y precios por franja horaria.</p></div>
+      <div class="feat" style="background:var(--bg)"><span class="tag">NÚMEROS</span><h3>Estadísticas</h3><p>Facturación, ocupación por horario y quiénes son tus mejores clientes.</p></div>
+      <div class="feat" style="background:var(--bg)"><span class="tag">COMUNIDAD</span><h3>Torneos y ranking</h3><p>Inscripciones, cuadros, ranking del club y "falta uno" para completar turnos.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="falta-uno">
+  <div class="wrap">
+    <div class="fu-top">
+      <div class="head">
+        <span class="eyebrow">Falta uno</span>
+        <h2>Ningún turno se cae por un jugador que falta</h2>
+        <p class="lead">Cuando a un partido, un torneo o una clase le falta gente, el club lo publica en la pizarra y el bot les avisa por WhatsApp a los jugadores de ese nivel. El primero que toca "Me sumo" se queda con el lugar.</p>
+      </div>
+      <div class="notif" aria-live="polite">
+        <div class="notif-h"><div class="avatar" data-initials>CE</div><b><span data-club>Club Ejemplo</span></b>ahora</div>
+        <div class="notif-b" id="notif-text"></div>
+        <small id="notif-sub"></small>
+      </div>
+    </div>
+    <div class="fu-bar">
+      <div class="chips" role="group" aria-label="Filtrar la pizarra" id="fu-chips">
+        <button type="button" aria-pressed="true" data-f="all">Todos <span class="n"></span></button>
+        <button type="button" aria-pressed="false" data-f="partido">Partidos <span class="n"></span></button>
+        <button type="button" aria-pressed="false" data-f="torneo">Torneos <span class="n"></span></button>
+        <button type="button" aria-pressed="false" data-f="clase">Clases <span class="n"></span></button>
+      </div>
+      <span class="eyebrow">Pizarra de <span data-club>Club Ejemplo</span> · demo</span>
+    </div>
+    <div class="board" id="board"></div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="head">
+      <span class="eyebrow">Por qué NOVANTIQ</span>
+      <h2>Tu club, tu marca, tus clientes</h2>
+      <p class="lead">Las apps de reservas grandes sirven, pero ponen a tu club en una vidriera junto a otros. Con NOVANTIQ el jugador habla con vos.</p>
+    </div>
+    <div class="cmp-scroll">
+      <table class="cmp">
+        <thead><tr><th scope="col"></th><th scope="col" class="us">NOVANTIQ</th><th scope="col">Apps de reservas grandes</th><th scope="col">WhatsApp a mano</th></tr></thead>
+        <tbody>
+          <tr><td>Dónde reserva el jugador</td><td class="us">En el WhatsApp del club</td><td>En la app o la web de la plataforma</td><td>En el WhatsApp del club</td></tr>
+          <tr><td>Tu marca en primer plano</td><td class="us yes">Siempre</td><td>Compartís pantalla con otros clubes</td><td class="yes">Sí</td></tr>
+          <tr><td>Atiende las 24 horas</td><td class="us yes">Sí</td><td class="yes">Sí</td><td class="no">Solo si contestás vos</td></tr>
+          <tr><td>Comisión por reserva</td><td class="us">Nunca. Abono fijo</td><td>Según la plataforma</td><td>No</td></tr>
+          <tr><td>Instalación y capacitación</td><td class="us">En persona, en tu club</td><td>En general, remota</td><td>No aplica</td></tr>
+          <tr><td>Cambios a medida del club</td><td class="us yes">Sí</td><td>Lo que traiga la plataforma</td><td>No aplica</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="on-court court-lines">
+  <div class="wrap">
+    <div class="head">
+      <span class="eyebrow">Un sistema, varios deportes</span>
+      <h2>Arrancamos por el pádel. Tu complejo entero viene después</h2>
+    </div>
+    <div class="sports-tabs" role="tablist" aria-label="Deportes">
+      <button role="tab" id="sp-padel" aria-selected="true" data-sport="padel">Pádel</button>
+      <button role="tab" id="sp-futbol" aria-selected="false" data-sport="futbol">Fútbol <span class="soon">Pronto</span></button>
+      <button role="tab" id="sp-tenis" aria-selected="false" data-sport="tenis">Tenis <span class="soon">Pronto</span></button>
+      <button role="tab" id="sp-basquet" aria-selected="false" data-sport="basquet">Básquet <span class="soon">Pronto</span></button>
+    </div>
+    <div class="sport-panel" role="tabpanel" aria-live="polite">
+      <canvas id="court-canvas" width="360" height="480" aria-hidden="true"></canvas>
+      <div>
+        <h3 id="sp-title"></h3>
+        <ul id="sp-list"></ul>
+        <p class="sport-meta" id="sp-meta"></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="precios">
+  <div class="wrap">
+    <div class="head">
+      <span class="eyebrow">Precios</span>
+      <h2>Abono fijo por mes. Sin comisiones, sin permanencia</h2>
+      <p class="lead">Elegís el plan según la cantidad de canchas. Se cobra en pesos al cambio del día 1 de cada mes, con débito automático.</p>
+    </div>
+    <div class="bill" role="group" aria-label="Forma de pago">
+      <button type="button" id="bill-m" aria-pressed="true">Mensual</button>
+      <button type="button" id="bill-a" aria-pressed="false">Anual <span class="save">2 meses gratis</span></button>
+    </div>
+    <div class="plans">
+      <div class="plan">
+        <div><h3>Arranque</h3><p class="for">1 a 3 canchas</p></div>
+        <div><div class="price"><b data-m="39" data-a="390">USD 39</b><span data-per>por mes</span></div><p class="price-sub" data-sub-a="Equivale a USD 32,50 por mes"></p></div>
+        <ul>
+          <li>Bot de WhatsApp con tu número</li>
+          <li>Reserva web y panel del dueño</li>
+          <li>Recordatorios y turnos fijos</li>
+          <li>Estadísticas básicas</li>
+          <li>300 reservas por bot al mes</li>
+          <li class="off">Seña con Mercado Pago</li>
+          <li class="off">Torneos y ranking</li>
+        </ul>
+        <a class="btn btn-ghost plan-cta" data-plan="Arranque" href="#fundadores">Elegir Arranque</a>
+      </div>
+      <div class="plan rec">
+        <span class="rec-tag">El más elegido</span>
+        <div><h3>Club</h3><p class="for">4 a 6 canchas</p></div>
+        <div><div class="price"><b data-m="64" data-a="640">USD 64</b><span data-per>por mes</span></div><p class="price-sub" data-sub-a="Equivale a USD 53,30 por mes"></p></div>
+        <ul>
+          <li>Todo lo de Arranque</li>
+          <li>Seña con Mercado Pago</li>
+          <li>Lista de espera y lista negra</li>
+          <li>Estadísticas completas</li>
+          <li>Una campaña por mes para llenar horarios flojos</li>
+          <li>500 reservas por bot al mes</li>
+          <li>Soporte por WhatsApp en 4 horas</li>
+        </ul>
+        <a class="btn btn-dark plan-cta" data-plan="Club" href="#fundadores">Elegir Club</a>
+      </div>
+      <div class="plan">
+        <div><h3>Complejo</h3><p class="for">7 canchas o más, o varios deportes</p></div>
+        <div><div class="price"><b data-m="89" data-a="890">USD 89</b><span data-per>por mes</span></div><p class="price-sub" data-sub-a="Equivale a USD 74,20 por mes"></p></div>
+        <ul>
+          <li>Todo lo de Club</li>
+          <li>Torneos, ranking y "falta uno"</li>
+          <li>Campañas ilimitadas</li>
+          <li>800 reservas por bot al mes</li>
+          <li>Soporte prioritario y visita mensual</li>
+        </ul>
+        <a class="btn btn-ghost plan-cta" data-plan="Complejo" href="#fundadores">Elegir Complejo</a>
+      </div>
+    </div>
+    <div class="price-notes">
+      <span><b>Instalación:</b> USD 150, una sola vez. Gratis para fundadores.</span>
+      <span><b>Cancha extra:</b> USD 10 por mes.</span>
+      <span><b>Prueba:</b> 30 días sin cargo.</span>
+    </div>
+  </div>
+</section>
+
+<section class="on-court court-lines" id="fundadores">
+  <div class="wrap founders-grid">
+    <div class="founder-box">
+      <span class="eyebrow" style="color:var(--ball)">Programa Fundadores</span>
+      <h2>Buscamos 5 clubes para crecer juntos</h2>
+      <div class="seats" aria-label="5 lugares en el programa"><i></i><i></i><i></i><i></i><i></i></div>
+      <ul class="founder-list">
+        <li><b>01</b><span><strong>Instalación gratis.</strong> Vamos al club, cargamos canchas, precios y reglas, y capacitamos a tu equipo.</span></li>
+        <li><b>02</b><span><strong>30 días sin cargo.</strong> Lo usás con tus jugadores antes de pagar nada.</span></li>
+        <li><b>03</b><span><strong>Precio congelado por 12 meses.</strong> El abono no sube durante el primer año.</span></li>
+        <li><b>04</b><span><strong>Línea directa.</strong> Lo que tu club necesite, lo sumamos al sistema.</span></li>
+      </ul>
+      <p style="color:var(--on-court-muted);font-size:15px">A cambio, nos contás qué mejorar y, si te gusta, nos dejás contarlo.</p>
+    </div>
+    <div>
+      <div class="head" style="margin-bottom:24px">
+        <span class="eyebrow">Contacto</span>
+        <h2>Pedí tu lugar</h2>
+        <p class="lead">Te mostramos el sistema funcionando con las canchas de tu club.</p>
+      </div>
+      <form id="demo-form">
+        <label class="f" for="f-nombre">Tu nombre<input class="t" id="f-nombre" name="nombre" required autocomplete="name"></label>
+        <label class="f" for="f-club">Nombre del club<input class="t" id="f-club" name="club" required></label>
+        <label class="f" for="f-canchas">Cantidad de canchas<input class="t" id="f-canchas" name="canchas" inputmode="numeric" placeholder="Ej: 4"></label>
+        <label class="f" for="f-plan">Plan que te interesa<input class="t" id="f-plan" name="plan" placeholder="Arranque, Club o Complejo"></label>
+        <button class="btn btn-ball" type="submit">Enviar por WhatsApp</button>
+        <p class="form-out" id="form-out" aria-live="polite">Se prepara el mensaje para enviarlo desde tu WhatsApp.</p>
+      </form>
+      <p class="contact-line">WhatsApp: <span id="wa-num-text">+54 9 11 0000-0000</span><button class="copy" type="button" id="copy-num">Copiar</button></p>
+    </div>
+  </div>
+</section>
+
+<section id="preguntas">
+  <div class="wrap">
+    <div class="head">
+      <span class="eyebrow">Preguntas frecuentes</span>
+      <h2>Lo que nos preguntan los dueños</h2>
+    </div>
+    <div class="faq">
+      <details><summary>¿Mis jugadores tienen que bajar una app?</summary><p>No. Reservan escribiendo al WhatsApp del club, como hacen hoy. También tienen una página web con la grilla para compartir en Instagram.</p></details>
+      <details><summary>Ya uso otra app de reservas. ¿Por qué cambiaría?</summary><p>Porque con NOVANTIQ el jugador reserva en tu WhatsApp, con tu marca, y no en una plataforma donde también ve a otros clubes. Además pagás un abono fijo, sin comisión por reserva, y te atiende alguien que conoce tu club.</p></details>
+      <details><summary>¿Y si el sistema se cae?</summary><p>El panel siempre te deja cargar reservas a mano, y si algo falla te respondemos por WhatsApp en el día. Tus reservas quedan guardadas en la nube.</p></details>
+      <details><summary>¿La plata de las señas a dónde va?</summary><p>Directo a la cuenta de Mercado Pago del club. NOVANTIQ no toca ese dinero ni cobra comisión sobre las reservas.</p></details>
+      <details><summary>No sé nada de tecnología. ¿Lo puedo usar?</summary><p>Sí. Lo instalamos en persona, te enseñamos en el club y el panel se usa desde el celular como cualquier aplicación.</p></details>
+      <details><summary>¿Tengo que firmar por un tiempo mínimo?</summary><p>No. El abono es mes a mes. Si te vas, te entregamos todos tus datos para que no pierdas nada.</p></details>
+      <details><summary>Mi complejo también tiene fútbol. ¿Sirve?</summary><p>El sistema está hecho para varios deportes. Empezamos por pádel y sumamos fútbol, tenis y básquet en las próximas etapas. Los fundadores los reciben primero.</p></details>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span class="logo">NOVANTIQ <span>PÁDEL</span></span>
+    <span>Las vistas de esta página son demostraciones con datos y precios de ejemplo.</span>
+  </div>
+</footer>
+
+<script>
+/* ---------- Configuración ---------- */
+// Reemplazar por el número real de NOVANTIQ (formato internacional, sin + ni espacios)
+const WA_NUMBER = "5491100000000";
+const WA_TEXT = "+54 9 11 0000-0000";
+// Abono de referencia del plan Club en pesos (actualizar cada mes)
+const ABONO_ARS = 93000;
+const PRICE_PRIME = 48000, PRICE_DAY = 36000, SENA = 0.3;
+
+const ars = n => "$" + Math.round(n).toLocaleString("es-AR");
+const waUrl = t => "https://wa.me/" + WA_NUMBER + "?text=" + encodeURIComponent(t);
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const $ = s => document.querySelector(s);
+
+document.getElementById("wa-num-text").textContent = WA_TEXT;
+document.querySelectorAll(".wa-link").forEach(a => a.href = waUrl("Hola, quiero saber más sobre NOVANTIQ Pádel para mi club."));
+
+/* ---------- Nombre del club ---------- */
+let CLUB = "Club Ejemplo";
+function initials(n){
+  const w = n.replace(/club|pádel|padel/gi,"").trim().split(/\s+/).filter(Boolean);
+  const src = w.length ? w : n.split(/\s+/);
+  return (src.slice(0,2).map(x => x[0]).join("") || "CE").toUpperCase();
+}
+function setClub(name, save){
+  CLUB = (name || "").trim().slice(0,40) || "Club Ejemplo";
+  document.querySelectorAll("[data-club]").forEach(el => {
+    el.textContent = (el.closest(".lead") && CLUB === "Club Ejemplo") ? "tu club" : CLUB;
+  });
+  document.querySelectorAll("[data-initials]").forEach(el => el.textContent = initials(CLUB));
+  if (save) { try { localStorage.setItem("nq-club", CLUB); } catch(e){} }
+}
+(function(){
+  let start = "";
+  try { start = new URLSearchParams(location.search).get("club") || ""; } catch(e){}
+  if (!start) { try { start = localStorage.getItem("nq-club") || ""; } catch(e){} }
+  if (start) { $("#club-input").value = start; }
+  setClub(start, false);
+})();
+$("#club-form").addEventListener("submit", e => {
+  e.preventDefault();
+  setClub($("#club-input").value, true);
+  const f = $("#f-club"); if (f && !f.value && CLUB !== "Club Ejemplo") f.value = CLUB;
+  resetBot();
+});
+$("#club-input").addEventListener("input", e => setClub(e.target.value, false));
+
+/* ---------- Animación del chat del hero ---------- */
+const heroChat = $("#hero-chat");
+if (!reduce) { [...heroChat.children].forEach((m,i) => m.style.animationDelay = (i*0.5)+"s"); heroChat.classList.add("play"); }
+
+/* ---------- Agenda de demostración ---------- */
+const TIMES = ["18:00","19:30","21:00","22:30"];
+const END = {"18:00":"19:30","19:30":"21:00","21:00":"22:30","22:30":"00:00"};
+function baseAgenda(){
+  const F = () => ({t:"free"});
+  return [
+    { "18:00":[{t:"busy",who:"Lucía P.",src:"Mostrador",pay:"paid"},{t:"block",who:"Mantenimiento",src:"hasta 19:30"},F()],
+      "19:30":[F(),{t:"busy",wa:1,who:"Diego R.",src:"WhatsApp",pay:"paid"},{t:"busy",wa:1,who:"Martín G.",src:"WhatsApp",pay:"paid"}],
+      "21:00":[{t:"busy",wa:1,who:"Sofía M.",src:"WhatsApp",pay:"paid"},{t:"busy",who:"Pablo T.",src:"Mostrador",pay:"pend"},{t:"busy",wa:1,who:"Ana L.",src:"WhatsApp",pay:"paid"}],
+      "22:30":[F(),F(),F()] },
+    { "18:00":[F(),{t:"busy",fijo:1,who:"Grupo de los jueves",src:"Turno fijo",pay:"pend"},F()],
+      "19:30":[{t:"busy",wa:1,who:"Nicolás B.",src:"WhatsApp",pay:"paid"},F(),F()],
+      "21:00":[{t:"busy",wa:1,who:"Carla V.",src:"WhatsApp",pay:"paid"},{t:"busy",who:"Jorge S.",src:"Mostrador",pay:"pend"},F()],
+      "22:30":[F(),F(),{t:"busy",wa:1,who:"Tomás E.",src:"WhatsApp",pay:"paid"}] }
+  ];
+}
+let AG = baseAgenda(), DAY = 0, extraRes = 0, extraSena = 0;
+const dayNames = ["dom","lun","mar","mié","jue","vie","sáb"];
+function dayLabel(d){ const x = new Date(); x.setDate(x.getDate()+d); return (d ? "Mañana " : "Hoy ") + dayNames[x.getDay()] + " " + x.getDate(); }
+document.querySelectorAll(".days button").forEach(b => { b.textContent = dayLabel(+b.dataset.day); b.addEventListener("click", () => showDay(+b.dataset.day)); });
+
+function slotHTML(s){
+  if (s.t === "free") return '<div class="slot free">Libre</div>';
+  if (s.t === "block") return `<div class="slot block">${s.who}<small>${s.src}</small></div>`;
+  if (s.t === "released") return `<div class="slot released">Liberado<small>Avisando a la lista de espera</small></div>`;
+  const cls = ["slot","busy", s.wa?"wa":"", s.fijo?"fijo":"", s.mine?"mine":""].join(" ");
+  const pill = s.pay === "paid" ? '<span class="pill paid">Seña paga</span>' : '<span class="pill pend">Pago en el club</span>';
+  return `<div class="${cls}">${s.who}<small>${s.src}</small>${pill}</div>`;
+}
+function renderAgenda(){
+  const a = AG[DAY];
+  $("#agenda-body").innerHTML = TIMES.map(t => `<tr><td class="h">${t}</td>${a[t].map(s => `<td>${slotHTML(s)}</td>`).join("")}</tr>`).join("");
+  const today = AG[0]; let res = 0, sena = 0, busy = 0, total = 0;
+  TIMES.forEach(t => today[t].forEach(s => { total++; if (s.t === "busy" || s.t === "block") busy++; if (s.t==="busy" && s.wa) { res++; if (s.pay==="paid") sena += PRICE_PRIME*SENA; } }));
+  $("#st-res").textContent = res; $("#st-sena").textContent = ars(sena); $("#st-occ").textContent = Math.round(busy/total*100) + "%";
+}
+function showDay(d){
+  DAY = d;
+  document.querySelectorAll(".days button").forEach(b => b.setAttribute("aria-selected", +b.dataset.day === d ? "true" : "false"));
+  renderAgenda();
+}
+showDay(0);
+// La grilla se "llena" al llegar a la demo (parte visible desde el inicio)
+if (!reduce && "IntersectionObserver" in window){
+  const io = new IntersectionObserver(es => es.forEach(en => { if (en.isIntersecting){ const tb = $("#agenda"); tb.classList.add("fill-in"); tb.querySelectorAll(".slot").forEach((s,i)=> s.style.animationDelay = (i*0.05)+"s"); io.disconnect(); } }), {threshold:.4});
+  io.observe($("#agenda"));
+}
+
+/* ---------- Bot interactivo ---------- */
+const bot = $("#bot");
+let booking = null, busyBot = false;
+function scrollBot(){ bot.scrollTop = bot.scrollHeight; }
+function addMsg(side, html, opts, extraClass){
+  const m = document.createElement("div");
+  m.className = "msg new " + side + (extraClass ? " " + extraClass : "");
+  m.innerHTML = html;
+  if (opts && opts.length){
+    const o = document.createElement("div"); o.className = "opts";
+    opts.forEach(([label, fn]) => {
+      const b = document.createElement("button"); b.type = "button"; b.textContent = label;
+      b.addEventListener("click", () => {
+        if (busyBot) return;
+        o.querySelectorAll("button").forEach(x => x.disabled = true); b.classList.add("picked");
+        addMsg("out", label); botSay(fn);
+      });
+      o.appendChild(b);
+    });
+    m.appendChild(o);
+  }
+  bot.appendChild(m); scrollBot(); return m;
+}
+function botSay(fn, wait){
+  busyBot = true; $("#bot-status").textContent = "escribiendo…";
+  const t = document.createElement("div"); t.className = "msg in typing"; t.innerHTML = "<i></i><i></i><i></i>";
+  bot.appendChild(t); scrollBot();
+  setTimeout(() => { t.remove(); busyBot = false; $("#bot-status").textContent = "en línea"; fn(); }, reduce ? 150 : (wait || 750));
+}
+function start(){
+  addMsg("in", `¡Hola! Soy el asistente de reservas de <b>${CLUB}</b>. ¿Qué querés hacer?`, [["Reservar cancha", askDay], ["Ver precios", prices], ["Hablar con el club", human]]);
+}
+function prices(){
+  addMsg("in", `Turno de 90 minutos:<br>• De 8 a 17 h: <b>${ars(PRICE_DAY)}</b><br>• De 17 a 24 h: <b>${ars(PRICE_PRIME)}</b><br>Para reservar se paga una seña del 30%.`, [["Reservar cancha", askDay]]);
+}
+function human(){
+  addMsg("in", "Listo, le aviso a alguien del club y te escribe enseguida. Si querés, mientras tanto podés reservar:", [["Reservar cancha", askDay]]);
+}
+function askDay(){
+  addMsg("in", "¿Para qué día?", [[dayLabel(0).replace("Hoy ","Hoy, "), () => askTime(0)], [dayLabel(1).replace("Mañana ","Mañana, "), () => askTime(1)]]);
+}
+function askTime(d){
+  showDay(d);
+  const times = TIMES.filter(t => AG[d][t].some(s => s.t === "free"));
+  if (!times.length){ addMsg("in", "Ese día está todo reservado. ¿Probamos otro?", [["Elegir otro día", askDay]]); return; }
+  addMsg("in", `Horarios con canchas libres (turnos de 90 min):`, times.map(t => [t, () => askCourt(d,t)]));
+}
+function askCourt(d,t){
+  const free = AG[d][t].map((s,i) => s.t === "free" ? i : -1).filter(i => i >= 0);
+  addMsg("in", `A las ${t} ${free.length > 1 ? "están libres" : "está libre"}:`, free.map(i => ["Cancha " + (i+1), () => askPay(d,t,i)]));
+}
+function askPay(d,t,i){
+  booking = {d,t,i};
+  const sena = PRICE_PRIME*SENA;
+  const m = addMsg("in", `Cancha ${i+1}, ${dayLabel(d).split(" ")[0].toLowerCase()} de ${t} a ${END[t]}. Para confirmar, aboná la seña de <b>${ars(sena)}</b> (30%). El resto se paga en el club.<br>`);
+  const b = document.createElement("button"); b.className = "mp"; b.type = "button"; b.textContent = "Pagar con Mercado Pago";
+  b.addEventListener("click", () => {
+    if (busyBot) return;
+    b.disabled = true; b.textContent = "Procesando pago de prueba…";
+    setTimeout(() => { b.textContent = "✓ Pago aprobado"; confirmBooking(); }, reduce ? 150 : 900);
+  });
+  m.appendChild(b); scrollBot();
+}
+function confirmBooking(){
+  const {d,t,i} = booking;
+  AG.forEach(day => TIMES.forEach(x => day[x].forEach(s => delete s.mine)));
+  AG[d][t][i] = {t:"busy",wa:1,mine:1,who:"Vos (demo)",src:"WhatsApp",pay:"paid"};
+  showDay(d);
+  botSay(() => {
+    addMsg("in", `✓ <b>Reserva confirmada.</b> Cancha ${i+1}, ${t} a ${END[t]}. Ya la ve el club en su panel. Te aviso 3 horas antes.`, null, "ok");
+    botSay(() => {
+      addMsg("sys", "3 horas antes del turno");
+      addMsg("in", `⏰ Recordatorio: jugás a las <b>${t}</b> en la Cancha ${i+1} de ${CLUB}. ¿Venís?`, [["Sí, voy", goodGame], ["Cancelar turno", cancelBooking]]);
+    }, 1400);
+  }, 500);
+}
+function goodGame(){ addMsg("in", "¡Genial! Te esperamos. Buen partido 🎾", [["Probar de nuevo", resetBot]]); }
+function cancelBooking(){
+  const {d,t,i} = booking;
+  AG[d][t][i] = {t:"released"}; showDay(d);
+  addMsg("in", "Turno cancelado a tiempo. Tu seña queda a favor para la próxima reserva. Ya avisamos a la lista de espera.", [["Probar de nuevo", resetBot]]);
+  setTimeout(() => { AG[d][t][i] = {t:"busy",wa:1,who:"Lista de espera",src:"WhatsApp",pay:"paid"}; if (DAY === d) renderAgenda(); }, reduce ? 300 : 2600);
+}
+function resetBot(){
+  AG = baseAgenda(); booking = null; busyBot = false; bot.innerHTML = ""; showDay(0); start();
+}
+start();
+
+/* ---------- Calculadora ---------- */
+const cP = $("#c-precio"), cC = $("#c-caidas"), cH = $("#c-horas");
+function calc(){
+  const p = +cP.value, c = +cC.value, h = +cH.value;
+  $("#o-precio").textContent = ars(p);
+  $("#o-caidas").textContent = c;
+  $("#o-horas").textContent = String(h).replace(".", ",") + " h";
+  const loss = p * c * 4.3;
+  $("#r-loss").textContent = ars(loss); $("#r-loss2").textContent = ars(loss); $("#r-cost").textContent = ars(ABONO_ARS);
+  const max = Math.max(loss, ABONO_ARS, 1);
+  $("#b-loss").style.width = (loss/max*100) + "%"; $("#b-cost").style.width = (ABONO_ARS/max*100) + "%";
+  $("#r-turnos").textContent = Math.ceil(ABONO_ARS / p);
+  $("#r-hs").textContent = Math.round(h * 30 * 0.8) + " h";
+}
+[cP,cC,cH].forEach(x => x.addEventListener("input", calc)); calc();
+
+/* ---------- Deportes ---------- */
+const SPORTS = {
+  padel:{title:"Pádel", meta:"Disponible ahora", items:["Turnos de 60, 90 o 120 minutos","Buscar compañero por nivel: \"falta uno para las 20\"","Ranking del club y torneos americanos","Paredes de vidrio, canchas techadas y descubiertas"], draw:"padel"},
+  futbol:{title:"Fútbol 5, 7 y 8", meta:"Próxima etapa", items:["Cada jugador paga su parte con un link","El turno se confirma cuando pagan todos","Ligas y torneos con fixture y tabla automáticos"], draw:"futbol"},
+  tenis:{title:"Tenis", meta:"En el plan", items:["Los profesores cargan sus clases y los alumnos reservan solos","Turnos fijos para alumnos","Polvo de ladrillo con horarios de riego bloqueados"], draw:"tenis"},
+  basquet:{title:"Básquet y vóley", meta:"En el plan", items:["Alquiler por equipo y por hora","Ligas barriales con resultados compartidos por WhatsApp","Escuelitas con cuota mensual y asistencia"], draw:"basquet"}
+};
+const cv = $("#court-canvas"), cx = cv.getContext("2d");
+function cssVar(n){ return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+function drawCourt(kind){
+  const W = cv.width, H = cv.height, line = cssVar("--on-court"), ball = cssVar("--ball");
+  cx.clearRect(0,0,W,H);
+  const fills = {padel:"#1E5A78", futbol:"#2F7A45", tenis:"#B4583A", basquet:"#B98A4E"};
+  const m = 24, w = W-2*m, h = H-2*m;
+  cx.fillStyle = fills[kind]; cx.beginPath(); cx.roundRect ? cx.roundRect(m,m,w,h,10) : cx.rect(m,m,w,h); cx.fill();
+  cx.strokeStyle = line; cx.lineWidth = 3; cx.strokeRect(m+10,m+10,w-20,h-20);
+  const X = m+10, Y = m+10, CW = w-20, CH = h-20, cy = Y+CH/2, ccx = X+CW/2;
+  cx.beginPath();
+  if (kind === "padel"){
+    cx.moveTo(X,cy); cx.lineTo(X+CW,cy);
+    cx.moveTo(X,Y+CH*0.2); cx.lineTo(X+CW,Y+CH*0.2); cx.moveTo(X,Y+CH*0.8); cx.lineTo(X+CW,Y+CH*0.8);
+    cx.moveTo(ccx,Y+CH*0.2); cx.lineTo(ccx,Y+CH*0.8);
+  } else if (kind === "futbol"){
+    cx.moveTo(X,cy); cx.lineTo(X+CW,cy); cx.moveTo(ccx+40,cy); cx.arc(ccx,cy,40,0,Math.PI*2);
+    cx.rect(ccx-55,Y,110,50); cx.rect(ccx-55,Y+CH-50,110,50);
+  } else if (kind === "tenis"){
+    cx.moveTo(X,cy); cx.lineTo(X+CW,cy);
+    cx.moveTo(X+CW*0.12,Y); cx.lineTo(X+CW*0.12,Y+CH); cx.moveTo(X+CW*0.88,Y); cx.lineTo(X+CW*0.88,Y+CH);
+    cx.moveTo(X+CW*0.12,Y+CH*0.25); cx.lineTo(X+CW*0.88,Y+CH*0.25); cx.moveTo(X+CW*0.12,Y+CH*0.75); cx.lineTo(X+CW*0.88,Y+CH*0.75);
+    cx.moveTo(ccx,Y+CH*0.25); cx.lineTo(ccx,Y+CH*0.75);
+  } else {
+    cx.moveTo(X,cy); cx.lineTo(X+CW,cy); cx.moveTo(ccx+34,cy); cx.arc(ccx,cy,34,0,Math.PI*2);
+    cx.rect(ccx-38,Y,76,90); cx.rect(ccx-38,Y+CH-90,76,90);
+    cx.moveTo(ccx+110,Y); cx.arc(ccx,Y,110,0,Math.PI); cx.moveTo(ccx-110,Y+CH); cx.arc(ccx,Y+CH,110,Math.PI,Math.PI*2);
+  }
+  cx.stroke();
+  if (kind === "padel"){ cx.strokeStyle = "rgba(234,242,240,.35)"; cx.lineWidth = 6; cx.strokeRect(m+2,m+2,w-4,h-4); }
+  cx.fillStyle = ball; cx.beginPath(); cx.arc(ccx+CW*0.22, Y+CH*0.33, 9, 0, Math.PI*2); cx.fill();
+}
+function showSport(k){
+  const s = SPORTS[k];
+  document.querySelectorAll(".sports-tabs button").forEach(b => b.setAttribute("aria-selected", b.dataset.sport === k ? "true" : "false"));
+  $("#sp-title").textContent = s.title; $("#sp-meta").textContent = s.meta;
+  $("#sp-list").innerHTML = s.items.map(i => `<li>${i}</li>`).join("");
+  drawCourt(s.draw);
+}
+document.querySelectorAll(".sports-tabs button").forEach(b => b.addEventListener("click", () => showSport(b.dataset.sport)));
+showSport("padel");
+matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", () => showSport(document.querySelector('.sports-tabs [aria-selected="true"]').dataset.sport));
+
+/* ---------- Precios ---------- */
+function setBill(annual){
+  $("#bill-m").setAttribute("aria-pressed", annual ? "false" : "true");
+  $("#bill-a").setAttribute("aria-pressed", annual ? "true" : "false");
+  document.querySelectorAll(".price b").forEach(b => b.textContent = "USD " + (annual ? b.dataset.a : b.dataset.m));
+  document.querySelectorAll("[data-per]").forEach(s => s.textContent = annual ? "por año" : "por mes");
+  document.querySelectorAll("[data-sub-a]").forEach(p => p.textContent = annual ? p.dataset.subA : "");
+}
+$("#bill-m").addEventListener("click", () => setBill(false));
+$("#bill-a").addEventListener("click", () => setBill(true));
+document.querySelectorAll(".plan-cta").forEach(a => a.addEventListener("click", () => { $("#f-plan").value = a.dataset.plan; }));
+
+/* ---------- Falta uno ---------- */
+const FU_NAMES = ["Juli M.","Fede A.","Caro P.","Nico L.","Sofi R.","Mati G.","Agus T.","Lu V.","Pedro S.","Vale C.","Tomi B.","Flor D.","Rami K.","Meli O.","Santi Z.","Jose H."];
+const pick = (n, off) => Array.from({length:n}, (_,i) => ({n: FU_NAMES[(i+off) % FU_NAMES.length]}));
+let FU = [
+  {id:1, tipo:"partido", label:"Partido", titulo:"Partido 2 vs 2", nivel:"7ma categoría", cuando:"Hoy · 20:00", cancha:"Cancha 2", precio:12000, cupo:4, unit:"jugador", jug:[{n:"Diego R."},{n:"Martín G."},{n:"Lucas F."}]},
+  {id:2, tipo:"torneo", label:"Torneo", titulo:"Americano mixto", nivel:"6ta y 7ma", cuando:"Sáb · 10:00", cancha:"Canchas 1 a 3", precio:20000, cupo:16, unit:"jugador", jug:pick(15,0)},
+  {id:3, tipo:"partido", label:"Peloteo", titulo:"Peloteo 1 vs 1", nivel:"Principiante", cuando:"Mañana · 18:00", cancha:"Cancha 3", precio:24000, cupo:2, unit:"jugador", jug:[{n:"Camila S."}]},
+  {id:4, tipo:"torneo", label:"Torneo", titulo:"Relámpago 2 vs 2", nivel:"5ta categoría", cuando:"Dom · 16:00", cancha:"Canchas 1 a 3", precio:40000, cupo:8, unit:"pareja", jug:pick(7,4).map((p,i)=>({n:p.n+" y "+FU_NAMES[(i+9)%16]}))},
+  {id:5, tipo:"partido", label:"Partido", titulo:"Partido 2 vs 2", nivel:"5ta categoría", cuando:"Mañana · 21:00", cancha:"Cancha 1", precio:12000, cupo:4, unit:"jugador", jug:[{n:"Pablo T."},{n:"Gonza E."}]},
+  {id:6, tipo:"clase", label:"Clase", titulo:"Clase de iniciación", nivel:"Iniciación", cuando:"Jue · 19:00", cancha:"Cancha 3", precio:15000, cupo:4, unit:"jugador", jug:[{n:"Ana L."},{n:"Rocío N."},{n:"Bruno C."}]}
+];
+let fuFilter = "all", fuOpen = new Set(), fuFresh = null, fuNextId = 7;
+const faltan = c => c.cupo - c.jug.length;
+function needText(c){
+  const f = faltan(c);
+  if (f <= 0) return "Completo";
+  const u = c.unit === "pareja" ? (f === 1 ? " pareja" : " parejas") : "";
+  return (f === 1 ? "Falta 1" : "Faltan " + f) + u;
+}
+function setNotif(c){
+  const f = faltan(c);
+  const quien = c.unit === "pareja" ? (f === 1 ? "1 pareja" : f + " parejas") : (f === 1 ? "1 jugador" : f + " jugadores");
+  $("#notif-text").innerHTML = `🎾 <b>Falta ${quien}</b> para ${c.titulo.toLowerCase()} · ${c.cuando.toLowerCase()} en <span data-club>${CLUB}</span>. Nivel: ${c.nivel}. ${ars(c.precio)} por ${c.unit}. ¿Te sumás?<div class="opts"><span>Me sumo</span><span>No, gracias</span></div>`;
+  $("#notif-sub").textContent = `Lo reciben los jugadores de ${c.nivel} que aceptaron avisos del club.`;
+}
+function renderBoard(){
+  const list = FU.filter(c => fuFilter === "all" || c.tipo === fuFilter);
+  document.querySelectorAll("#fu-chips button").forEach(b => {
+    const k = b.dataset.f; b.querySelector(".n").textContent = FU.filter(c => (k === "all" || c.tipo === k) && faltan(c) > 0).length;
+  });
+  const cards = list.map(c => {
+    const f = faltan(c), mine = c.jug.some(j => j.me), open = fuOpen.has(c.id);
+    const dots = c.jug.map(j => `<i class="${j.me ? "me" : ""}"></i>`).join("") + Array.from({length:Math.max(f,0)}, () => '<i class="empty"></i>').join("");
+    const players = c.jug.map(j => `<li class="${j.me ? "you" : ""}">${j.me ? "Vos" : j.n}<span>${j.me ? "recién sumado" : "confirmado"}</span></li>`).join("")
+      + Array.from({length:Math.max(f,0)}, () => `<li class="slot-open">Lugar libre<span>esperando</span></li>`).join("");
+    const action = mine
+      ? `<button class="btn btn-ghost btn-sm" type="button" data-leave="${c.id}">Me bajo</button>`
+      : (f > 0 ? `<button class="btn btn-ball btn-sm" type="button" data-join="${c.id}">Me sumo</button>` : "");
+    return `<article class="fu${f <= 0 ? " full" : ""}${fuFresh === c.id ? " fresh" : ""}">
+      <div class="fu-row"><span class="fu-type">${c.label}</span><span class="need${f <= 0 ? " done" : ""}">${needText(c)}</span></div>
+      <h3>${c.titulo}</h3>
+      <div class="fu-meta"><span><b>${c.cuando}</b> · ${c.cancha}</span><span>Nivel: ${c.nivel}</span></div>
+      <div class="dots${c.unit === "pareja" ? " pairs" : ""}" aria-label="${c.jug.length} de ${c.cupo} lugares ocupados">${dots}</div>
+      ${mine ? `<p class="fu-ok">✓ Estás adentro. Te llegó la confirmación por WhatsApp.</p>` : ""}
+      <button class="link-btn" type="button" aria-expanded="${open}" data-toggle="${c.id}">${open ? "Ocultar" : "Ver"} ${c.unit === "pareja" ? "parejas" : "jugadores"} (${c.jug.length}/${c.cupo})</button>
+      ${open ? `<ul class="players">${players}</ul>` : ""}
+      <div class="fu-foot"><span class="fu-price">${ars(c.precio)}<small>por ${c.unit}</small></span><div class="fu-actions">${action}</div></div>
+    </article>`;
+  }).join("");
+  const publish = `<form class="publish" id="fu-form">
+      <h3>Publicá un "falta uno"</h3>
+      <p>Así lo haría el club desde su panel. El bot avisa solo.</p>
+      <label for="fu-tipo">Qué es<select id="fu-tipo">
+        <option value="p2">Partido 2 vs 2</option><option value="p1">Peloteo 1 vs 1</option><option value="ta">Torneo americano</option><option value="tp">Torneo por parejas</option><option value="cl">Clase grupal</option>
+      </select></label>
+      <div class="two">
+        <label for="fu-cuando">Cuándo<select id="fu-cuando"><option>Hoy · 19:30</option><option>Hoy · 22:30</option><option>Mañana · 20:00</option><option>Sáb · 11:00</option></select></label>
+        <label for="fu-faltan">Faltan<select id="fu-faltan"><option>1</option><option>2</option><option>3</option></select></label>
+      </div>
+      <label for="fu-nivel">Nivel<select id="fu-nivel"><option>Principiante</option><option>7ma categoría</option><option selected>6ta categoría</option><option>5ta categoría</option><option>4ta o más</option></select></label>
+      <button class="btn btn-dark" type="submit">Publicar y avisar</button>
+    </form>`;
+  $("#board").innerHTML = publish + cards;
+  $("#fu-form").addEventListener("submit", publishFU);
+}
+function publishFU(e){
+  e.preventDefault();
+  const T = {
+    p2:{tipo:"partido",label:"Partido",titulo:"Partido 2 vs 2",cupo:4,unit:"jugador",precio:12000},
+    p1:{tipo:"partido",label:"Peloteo",titulo:"Peloteo 1 vs 1",cupo:2,unit:"jugador",precio:24000},
+    ta:{tipo:"torneo",label:"Torneo",titulo:"Americano",cupo:16,unit:"jugador",precio:20000},
+    tp:{tipo:"torneo",label:"Torneo",titulo:"Torneo por parejas",cupo:8,unit:"pareja",precio:40000},
+    cl:{tipo:"clase",label:"Clase",titulo:"Clase grupal",cupo:4,unit:"jugador",precio:15000}
+  }[$("#fu-tipo").value];
+  const f = Math.min(+$("#fu-faltan").value, T.cupo - 1);
+  const c = {...T, id:fuNextId++, nivel:$("#fu-nivel").value, cuando:$("#fu-cuando").value, cancha: T.tipo === "torneo" ? "Canchas 1 a 3" : "Cancha 1", jug: pick(T.cupo - f, fuNextId*3)};
+  if (T.unit === "pareja") c.jug = c.jug.map((p,i) => ({n: p.n + " y " + FU_NAMES[(i+5)%16]}));
+  FU.unshift(c); fuFresh = c.id;
+  if (fuFilter !== "all" && fuFilter !== c.tipo) fuFilter = "all", setChips();
+  setNotif(c); renderBoard();
+}
+function setChips(){ document.querySelectorAll("#fu-chips button").forEach(b => b.setAttribute("aria-pressed", b.dataset.f === fuFilter ? "true" : "false")); }
+$("#fu-chips").addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; fuFilter = b.dataset.f; setChips(); renderBoard(); });
+$("#board").addEventListener("click", e => {
+  const j = e.target.closest("[data-join]"), l = e.target.closest("[data-leave]"), t = e.target.closest("[data-toggle]");
+  if (j){ const c = FU.find(x => x.id === +j.dataset.join); if (faltan(c) > 0){ c.jug.push({n:"Vos", me:true}); fuFresh = null; renderBoard(); } }
+  if (l){ const c = FU.find(x => x.id === +l.dataset.leave); c.jug = c.jug.filter(x => !x.me); renderBoard(); }
+  if (t){ const id = +t.dataset.toggle; fuOpen.has(id) ? fuOpen.delete(id) : fuOpen.add(id); renderBoard(); const nb = document.querySelector(`[data-toggle="${id}"]`); if (nb) nb.focus(); }
+});
+setNotif(FU[0]); renderBoard();
+
+/* ---------- Formulario ---------- */
+const form = $("#demo-form"), out = $("#form-out");
+form.addEventListener("submit", e => {
+  e.preventDefault();
+  const d = new FormData(form);
+  const msg = `Hola, soy ${d.get("nombre")} del club ${d.get("club")}` +
+    (d.get("canchas") ? ` (${d.get("canchas")} canchas)` : "") +
+    (d.get("plan") ? `. Me interesa el plan ${d.get("plan")}` : "") +
+    ". Quiero un lugar en el Programa Fundadores de NOVANTIQ Pádel.";
+  const url = waUrl(msg);
+  out.innerHTML = 'Mensaje listo. <a href="' + url + '" target="_blank" rel="noopener">Abrir WhatsApp para enviarlo</a>.';
+});
+$("#copy-num").addEventListener("click", () => {
+  const b = $("#copy-num");
+  const done = () => { b.textContent = "Copiado"; setTimeout(() => b.textContent = "Copiar", 1600); };
+  try {
+    navigator.clipboard.writeText(WA_TEXT).then(done).catch(() => { getSelection().selectAllChildren($("#wa-num-text")); });
+  } catch(e){ getSelection().selectAllChildren($("#wa-num-text")); }
+});
+</script>
+
+</body>
+</html>
