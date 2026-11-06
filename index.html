@@ -8,12 +8,22 @@
   <meta property="og:title" content="NOVANTIQ SPORTS — Tu complejo reserva solo, por WhatsApp">
   <meta property="og:description" content="Disponibilidad real, sin turnos pisados y con todo el control desde el celular. Abono fijo, sin comisión por reserva.">
   <meta property="og:type" content="website">
+  <meta property="og:locale" content="es_AR">
+  <!-- La URL absoluta sale de VITE_PUBLIC_SITE_URL al compilar (WhatsApp y Facebook la necesitan completa). -->
+  <meta property="og:image" content="%VITE_PUBLIC_SITE_URL%/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="NOVANTIQ SPORTS: tu complejo reserva solo, por WhatsApp">
+  <meta name="twitter:card" content="summary_large_image">
   <meta name="theme-color" content="#0B1F2A">
+  <link rel="apple-touch-icon" href="/novantiq-sports-demo/icons/apple-touch-icon.png">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230B1F2A'/%3E%3Crect x='7' y='5' width='18' height='22' rx='1.5' fill='none' stroke='%23EAF2F0' stroke-width='1.8'/%3E%3Cpath d='M7 16h18M16 9.5v13' stroke='%23EAF2F0' stroke-width='1.4'/%3E%3Ccircle cx='21.5' cy='10' r='3' fill='%23C8F048'/%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,500..900&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
-  <link rel="stylesheet" crossorigin href="/novantiq-sports-demo/assets/landing-6b359d8d.css">
+  <script type="module" crossorigin src="/novantiq-sports-demo/assets/index-CIJhBIgd.js"></script>
+  <link rel="modulepreload" crossorigin href="/novantiq-sports-demo/assets/ui-DZUkhcmO.js">
+  <link rel="stylesheet" crossorigin href="/novantiq-sports-demo/assets/index-DuSWrKkp.css">
 </head>
 <body>
 <header class="nav">
@@ -120,7 +130,7 @@
               <tbody id="agenda-body"></tbody>
             </table>
           </div>
-          <div class="mock-foot"><span>Vista de demostración con datos de ejemplo</span><span class="fab">+ Reserva manual</span></div>
+          <div class="mock-foot"><span>Vista de demostración con datos de ejemplo</span><span class="fab">+ Reserva manual</span><button class="back-chat" id="back-chat" type="button" hidden>↑ Volver al chat</button></div>
         </div>
         <div class="stats" aria-live="polite">
           <div class="stat"><b id="st-res">0</b><span>Reservas online hoy</span></div>
@@ -192,7 +202,8 @@
           <div><b id="r-turnos">0</b><span>turnos recuperados pagan el mes</span></div>
           <div><b id="r-hs">0 h</b><span>de tu tiempo libres por mes</span></div>
         </div>
-        <p class="calc-note">Calculado con 4,3 semanas por mes. Plan Club: USD 64 por mes, unos $93.000 al cambio de octubre de 2026.</p>
+        <a class="btn btn-ball calc-cta" id="calc-cta" href="#fundadores">Quiero recuperar esa plata</a>
+        <p class="calc-note" id="calc-note"></p>
       </div>
     </div>
   </div>
@@ -216,7 +227,7 @@
       <div class="feat"><span class="tag">CAJA</span><h3>Cobros del día</h3><p>Señas y pagos en efectivo, transferencia o tarjeta, por día y por medio de pago.</p></div>
       <div class="feat"><span class="tag">REPORTES</span><h3>Mapa de demanda</h3><p>Calor por día y hora, rendimiento por cancha y clientes para reactivar.</p></div>
       <div class="feat"><span class="tag">APP</span><h3>Se instala en el celular</h3><p>El panel y la página de reservas quedan con su ícono, sin pasar por ninguna tienda.</p></div>
-      <div class="feat"><span class="tag">PRÓXIMAMENTE</span><h3>Seña online y torneos</h3><p>Seña con Mercado Pago al reservar, pizarra "Falta uno", torneos y ranking del complejo.</p></div>
+      <div class="feat"><span class="tag">SEÑA ONLINE</span><h3>Chau turnos caídos</h3><p>El jugador paga la seña con Mercado Pago al reservar y la plata va directo al complejo. Si no paga a tiempo, el turno se libera solo.</p></div>
     </div>
   </div>
 </section>
@@ -248,16 +259,21 @@
   <div class="wrap">
     <div class="head">
       <span class="eyebrow">Un sistema, todos tus deportes</span>
-      <h2>Pádel, fútbol, tenis y básquet en la misma agenda</h2>
+      <h2>Pádel, fútbol, tenis, básquet y vóley en la misma agenda</h2>
     </div>
     <div class="sports-tabs" role="tablist" aria-label="Deportes">
-      <button role="tab" id="sp-padel" aria-selected="true" data-sport="padel">Pádel</button>
-      <button role="tab" id="sp-futbol" aria-selected="false" data-sport="futbol">Fútbol</button>
-      <button role="tab" id="sp-tenis" aria-selected="false" data-sport="tenis">Tenis</button>
-      <button role="tab" id="sp-basquet" aria-selected="false" data-sport="basquet">Básquet y vóley</button>
+      <button role="tab" id="sp-padel" aria-selected="true" data-sport="padel" aria-controls="sport-panel">Pádel</button>
+      <button role="tab" id="sp-futbol" aria-selected="false" data-sport="futbol" aria-controls="sport-panel">Fútbol</button>
+      <button role="tab" id="sp-tenis" aria-selected="false" data-sport="tenis" aria-controls="sport-panel">Tenis</button>
+      <button role="tab" id="sp-basquet" aria-selected="false" data-sport="basquet" aria-controls="sport-panel">Básquet</button>
+      <button role="tab" id="sp-voley" aria-selected="false" data-sport="voley" aria-controls="sport-panel">Vóley</button>
     </div>
-    <div class="sport-panel" role="tabpanel" aria-live="polite">
-      <canvas id="court-canvas" width="360" height="480" aria-hidden="true"></canvas>
+    <div class="sport-panel" id="sport-panel" role="tabpanel" aria-labelledby="sp-padel">
+      <figure class="court-fig">
+        <div class="court-box"><canvas id="court-canvas" width="300" height="400" aria-hidden="true"></canvas></div>
+        <figcaption class="court-cap"><span id="court-cap" aria-hidden="true"></span>
+          <button class="court-pause" id="court-pause" type="button" aria-pressed="false" aria-label="Pausar la animación"><i></i></button></figcaption>
+      </figure>
       <div>
         <h3 id="sp-title"></h3>
         <ul id="sp-list"></ul>
@@ -304,7 +320,7 @@
           <li>Una campaña por mes para llenar horarios flojos</li>
           <li>500 reservas por bot al mes</li>
           <li>Soporte por WhatsApp en 4 horas</li>
-          <li>Seña con Mercado Pago <span class="tag-soon">Próximamente</span></li>
+          <li>Seña con Mercado Pago: el turno se confirma al pagar</li>
         </ul>
         <a class="btn btn-dark plan-cta" data-plan="Club" href="#fundadores">Elegir Club</a>
       </div>
@@ -350,7 +366,8 @@
     <div class="founder-box">
       <span class="eyebrow" style="color:var(--ball)">Programa Fundadores</span>
       <h2>Buscamos 5 complejos para crecer juntos</h2>
-      <div class="seats" aria-label="5 lugares en el programa"><i></i><i></i><i></i><i></i><i></i></div>
+      <!-- Cuando se sume un complejo, subí data-taken (lugares ocupados de 5). -->
+      <div class="seats-row"><div class="seats" id="seats" data-total="5" data-taken="0" role="img"></div><p class="seats-text" id="seats-text"></p></div>
       <ul class="founder-list">
         <li><b>01</b><span><strong>Instalación gratis.</strong> Vamos al complejo, cargamos canchas, precios y reglas, y capacitamos a tu equipo.</span></li>
         <li><b>02</b><span><strong>30 días sin cargo.</strong> Lo usás con tus jugadores antes de pagar nada.</span></li>
@@ -369,7 +386,7 @@
         <label class="f" for="f-nombre">Tu nombre<input class="t" id="f-nombre" name="nombre" required autocomplete="name"></label>
         <label class="f" for="f-club">Nombre del complejo<input class="t" id="f-club" name="club" required></label>
         <label class="f" for="f-canchas">Canchas y deportes<input class="t" id="f-canchas" name="canchas" placeholder="Ej: 3 de pádel y 2 de fútbol 5"></label>
-        <label class="f" for="f-plan">Plan que te interesa<input class="t" id="f-plan" name="plan" placeholder="Arranque, Club o Complejo"></label>
+        <label class="f" for="f-plan">Plan que te interesa<select class="t" id="f-plan" name="plan"><option value="">Todavía no sé</option><option>Arranque</option><option>Club</option><option>Complejo</option></select></label>
         <button class="btn btn-ball" type="submit">Enviar por WhatsApp</button>
         <p class="form-out" id="form-out" aria-live="polite">Se prepara el mensaje para enviarlo desde tu WhatsApp.</p>
       </form>
@@ -388,7 +405,7 @@
       <details><summary>¿Mis jugadores tienen que bajar una app?</summary><p>No. Reservan escribiendo al WhatsApp del complejo o desde su página de reservas, en el navegador del celular. Vos tampoco instalás nada: el panel funciona en el celular o la computadora.</p></details>
       <details><summary>Ya uso otra app de reservas. ¿Por qué cambiaría?</summary><p>Porque con NOVANTIQ el jugador reserva en tu WhatsApp y tu página, con tu marca, y no en una plataforma donde también ve a otros complejos. Pagás un abono fijo, sin comisión por reserva, y te atiende alguien que conoce tu complejo.</p></details>
       <details><summary>¿Qué pasa si dos personas quieren el mismo turno al mismo tiempo?</summary><p>Solo una reserva se confirma. La otra persona recibe un aviso de que el horario ya no está disponible y puede elegir otro.</p></details>
-      <details><summary>¿Los jugadores pagan online?</summary><p>Hoy el pago se hace en el complejo y lo registrás en la caja del panel. La seña online con Mercado Pago está planificada para una próxima etapa; cuando esté lista, la plata irá directo a la cuenta del complejo.</p></details>
+      <details><summary>¿Los jugadores pagan online?</summary><p>Si querés, sí: activás la seña con Mercado Pago (por ejemplo, el 30 %) y el turno se confirma recién cuando el jugador la paga. La plata va directo a la cuenta de Mercado Pago del complejo, y si no paga a tiempo el horario se libera solo. El saldo se cobra en el complejo y lo registrás en la caja del panel.</p></details>
       <details><summary>¿El bot de WhatsApp está incluido?</summary><p>Sí, en todos los planes. Para que funcione con tu número hay que habilitarlo en WhatsApp Business Platform. Meta cobra por mensaje; cada plan incluye un cupo de reservas por bot y lo que pase de ese cupo se cobra al costo.</p></details>
       <details><summary>¿Puedo cambiar precios y horarios yo mismo?</summary><p>Sí, desde el panel. Los cambios no modifican las reservas ya confirmadas: si un cambio afecta turnos futuros, el sistema te avisa antes de aplicarlo.</p></details>
       <details><summary>¿Quién ve los datos de mis clientes?</summary><p>Solo tu equipo. NOVANTIQ accede únicamente si vos lo autorizás, por tiempo limitado y con registro de auditoría.</p></details>
@@ -407,6 +424,5 @@
     <a href="acceso.html" style="color:var(--on-court)">Acceso para complejos</a>
   </div>
 </footer>
-<script type="module" crossorigin src="/novantiq-sports-demo/assets/landing-54a2c090.js"></script>
 </body>
 </html>
